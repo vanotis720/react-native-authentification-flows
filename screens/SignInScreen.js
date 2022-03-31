@@ -6,11 +6,11 @@ import {
     TextInput,
     TouchableOpacity,
     Dimensions,
-    Platform
+    Platform,
+    StatusBar
 } from "react-native";
 
 import { LinearGradient } from 'expo-linear-gradient';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Feather from 'react-native-vector-icons/Feather';
 import * as Animatable from 'react-native-animatable';
 
@@ -54,14 +54,17 @@ function SignInScreen({ navigation }) {
 
     return (
         <View style={styles.container}>
+            <StatusBar backgroundColor='#009387' barStyle="light-content" />
             <View style={styles.header}>
                 <Text style={styles.text_header}>Hello! Bienvenue !</Text>
             </View>
-            <View style={styles.footer}>
+            <Animatable.View
+                animation="fadeInUpBig"
+                style={styles.footer}>
                 <Text style={styles.text_footer}>Adresse e-mail</Text>
                 <View style={styles.action}>
-                    <FontAwesome
-                        name="user-o"
+                    <Feather
+                        name="mail"
                         color="green"
                         size={20}
                     />
@@ -139,10 +142,10 @@ function SignInScreen({ navigation }) {
                     >
                         <Text style={[styles.textSign, {
                             color: '#009387'
-                        }]}>Creer un compte</Text>
+                        }]}>Créer un compte</Text>
                     </TouchableOpacity>
                 </View>
-            </View>
+            </Animatable.View>
         </View>
     )
 }

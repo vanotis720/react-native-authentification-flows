@@ -5,7 +5,8 @@ import {
     StyleSheet,
     TouchableOpacity,
     Dimensions,
-    Image
+    Image,
+    StatusBar
 } from "react-native";
 
 import { LinearGradient } from 'expo-linear-gradient';
@@ -17,6 +18,7 @@ const SplashScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
+            <StatusBar backgroundColor='#009387' barStyle="light-content" />
             <Animatable.View
                 style={styles.header}
                 animation="bounceIn"
