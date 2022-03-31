@@ -13,6 +13,11 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Feather from 'react-native-vector-icons/Feather';
 import * as Animatable from 'react-native-animatable';
 
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import { AuthContext } from '../components/context';
+
+
 function SignInScreen({ navigation }) {
     const [data, setData] = React.useState({
         email: '',
@@ -20,6 +25,10 @@ function SignInScreen({ navigation }) {
         check_textInputChange: false,
         secureTextEntry: true,
     });
+
+    const { signIn } = React.useContext(AuthContext);
+
+    const userInfo = { email: 'root@info.com', pass: '1234' };
 
     const textInputChange = (val) => {
         if (val.length !== 0) {
@@ -49,6 +58,19 @@ function SignInScreen({ navigation }) {
             ...data,
             secureTextEntry: !data.secureTextEntry
         });
+    }
+
+    const _login = async () => {
+        if (userInfo.email === data.email && userInfo.pass === data.password) {
+            try {
+                await AsyncStorage.setItem('isLoggedIn', '1')
+            } catch (e) {
+                alert("error on saving, reinstall the app")
+            }
+        }
+        else {
+            alert("wrong password or email")
+        }
     }
 
     return (
@@ -119,7 +141,7 @@ function SignInScreen({ navigation }) {
                 <View style={styles.button}>
                     <TouchableOpacity
                         style={styles.signIn}
-                        onPress={() => { alert('signIn') }}
+                        onPress={() => { signIn() }}
                     >
                         <LinearGradient
                             colors={['#08d4c4', '#01ab9d']}

@@ -12,6 +12,8 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import Feather from 'react-native-vector-icons/Feather';
 import * as Animatable from 'react-native-animatable';
+import { AuthContext } from '../components/context';
+
 
 function SignUpScreen({ navigation }) {
     const [data, setData] = React.useState({
@@ -22,6 +24,9 @@ function SignUpScreen({ navigation }) {
         secureTextEntry: true,
         confirm_secureTextEntry: true,
     });
+
+    const { signUp } = React.useContext(AuthContext);
+
 
     const textInputChange = (val) => {
         if (val.length !== 0) {
@@ -145,7 +150,6 @@ function SignUpScreen({ navigation }) {
                         style={styles.text_input}
                         autoCapitalize='none'
                         onChangeText={(val) => handleConfirmPasswordChange(val)}
-
                     />
                     <TouchableOpacity
                         onPress={updateConfirmSecureTextEntry}
@@ -168,7 +172,7 @@ function SignUpScreen({ navigation }) {
                 <View style={styles.button}>
                     <TouchableOpacity
                         style={styles.signIn}
-                        onPress={() => { alert('signIn') }}
+                        onPress={() => { signUp() }}
                     >
                         <LinearGradient
                             colors={['#08d4c4', '#01ab9d']}
