@@ -5,7 +5,6 @@ import {
     StyleSheet,
     TouchableOpacity,
     Dimensions,
-    StatusBar,
     Image
 } from "react-native";
 
