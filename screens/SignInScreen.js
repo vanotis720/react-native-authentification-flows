@@ -15,6 +15,7 @@ import Feather from 'react-native-vector-icons/Feather';
 import * as Animatable from 'react-native-animatable';
 import { AuthContext } from '../components/context';
 import Users from '../model/users'
+import { validateEmail, checkPassword } from '../helpers/formValidation';
 
 function SignInScreen({ navigation }) {
     const [data, setData] = React.useState({
@@ -29,7 +30,7 @@ function SignInScreen({ navigation }) {
     const { signIn } = React.useContext(AuthContext);
 
     const textInputChange = (val) => {
-        if (val.trim().length >= 4) {
+        if (validateEmail(val)) {
             setData({
                 ...data,
                 email: val,
@@ -47,20 +48,10 @@ function SignInScreen({ navigation }) {
     }
 
     const handlePasswordChange = (val) => {
-        if (val.trim().length >= 4) {
-            setData({
-                ...data,
-                password: val,
-                isValidPassword: true
-            });
-        }
-        else {
-            setData({
-                ...data,
-                password: val,
-                isValidPassword: false
-            });
-        }
+        setData({
+            ...data,
+            password: val,
+        });
     }
 
     const updateSecureTextEntry = () => {
@@ -70,22 +61,8 @@ function SignInScreen({ navigation }) {
         });
     }
 
-    const loginHandle = (userEmail, password) => {
-        const foundUser = Users.filter(item => {
-            return userEmail == item.email && password == item.password
-        })
-
-        if (foundUser.length == 0) {
-            Alert.alert('Invalid User!', 'Username or password is incorrect.', [
-                { text: 'Okay' }
-            ]);
-            return;
-        }
-        signIn(foundUser)
-    }
-
     const handleValidEmail = (val) => {
-        if (val.trim().length >= 4) {
+        if (validateEmail(val)) {
             setData({
                 ...data,
                 isValidEmail: true
@@ -96,6 +73,27 @@ function SignInScreen({ navigation }) {
                 isValidEmail: false
             });
         }
+    }
+
+    const loginHandle = (userEmail, password) => {
+        const foundUser = Users.filter(item => {
+            return userEmail == item.email && password == item.password
+        })
+
+        if (userEmail.length == 0 || password.length == 0) {
+            Alert.alert('Entrée erronée!', 'le champ email ou mot de passe ne peut pas être vide.', [
+                { text: 'D\'accord' }
+            ]);
+            return;
+        }
+
+        if (foundUser.length == 0) {
+            Alert.alert('Utilisateur invalide!', 'L\'email ou le mot de passe est incorrect.', [
+                { text: 'D\'accord' }
+            ]);
+            return;
+        }
+        signIn(foundUser)
     }
 
     return (
@@ -171,13 +169,15 @@ function SignInScreen({ navigation }) {
                 </View>
                 {data.isValidPassword ? null :
                     <Animatable.View animation="fadeInLeft" duration={500}>
-                        <Text style={styles.errorMsg}>Le mot de passe doit comporter 4 caractères au minimum.</Text>
+                        <Text style={styles.errorMsg}>
+                            Le mot de passe doit comporter au minimum 8 lettres, avec au moins un symbole, des lettres majuscules et minuscules et un chiffre
+                        </Text>
                     </Animatable.View>
                 }
                 <View style={styles.button}>
                     <TouchableOpacity
                         style={styles.signIn}
-                        onPress={() => { signIn(data.email, data.password) }}
+                        onPress={() => { loginHandle(data.email, data.password) }}
                     >
                         <LinearGradient
                             colors={['#08d4c4', '#01ab9d']}

@@ -6,56 +6,84 @@ import {
     TextInput,
     TouchableOpacity,
     Platform,
-    StatusBar
+    StatusBar,
+    Alert
 } from "react-native";
 
 import { LinearGradient } from 'expo-linear-gradient';
 import Feather from 'react-native-vector-icons/Feather';
 import * as Animatable from 'react-native-animatable';
 import { AuthContext } from '../components/context';
+import { validateEmail, checkPassword, usernameIsValid } from '../helpers/formValidation';
 
 
 function SignUpScreen({ navigation }) {
     const [data, setData] = React.useState({
         email: '',
+        username: '',
         password: '',
-        confirm_password: '',
-        check_textInputChange: false,
         secureTextEntry: true,
-        confirm_secureTextEntry: true,
+        isValidEmail: true,
+        isValidUsername: true,
+        isValidPassword: true,
+        check_emailChange: false,
+        check_usernameChange: false,
     });
 
     const { signUp } = React.useContext(AuthContext);
 
 
-    const textInputChange = (val) => {
-        if (val.length !== 0) {
+    const usernameChange = (val) => {
+        if (usernameIsValid(val)) {
+            setData({
+                ...data,
+                username: val,
+                isValidUsername: true,
+                check_usernameChange: true
+            });
+        } else {
+            setData({
+                ...data,
+                username: val,
+                isValidUsername: false,
+                check_usernameChange: true
+            });
+        }
+    }
+
+    const emailChange = (val) => {
+        if (validateEmail(val)) {
             setData({
                 ...data,
                 email: val,
-                check_textInputChange: true,
+                isValidEmail: true,
+                check_emailChange: true,
             });
         } else {
             setData({
                 ...data,
                 email: val,
-                check_textInputChange: false,
+                isValidEmail: false,
+                check_emailChange: true,
             });
         }
     }
 
-    const handlePasswordChange = (val) => {
-        setData({
-            ...data,
-            password: val,
-        });
-    }
-
-    const handleConfirmPasswordChange = (val) => {
-        setData({
-            ...data,
-            confirm_password: val,
-        });
+    const passwordChange = (val) => {
+        if (checkPassword(val)) {
+            setData({
+                ...data,
+                password: val,
+                isValidPassword: true
+            });
+        }
+        else {
+            setData({
+                ...data,
+                password: val,
+                isValidPassword: false
+            });
+        }
     }
 
     const updateSecureTextEntry = () => {
@@ -65,11 +93,16 @@ function SignUpScreen({ navigation }) {
         });
     }
 
-    const updateConfirmSecureTextEntry = () => {
-        setData({
-            ...data,
-            confirm_secureTextEntry: !data.confirm_secureTextEntry
-        });
+    const signUpHandle = (userEmail, userName, password) => {
+
+        if (userEmail.length == 0 || userName.length == 0 || password.length == 0) {
+            Alert.alert('Entrée erronée!', 'le champ email, nom ou mot de passe ne peut pas être vide.', [
+                { text: 'D\'accord' }
+            ]);
+            return;
+        }
+
+        signUp(userEmail, userName, password);
     }
 
     return (
@@ -92,9 +125,9 @@ function SignUpScreen({ navigation }) {
                         placeholder="Votre E-mail"
                         style={styles.text_input}
                         autoCapitalize='none'
-                        onChangeText={(val) => textInputChange(val)}
+                        onChangeText={(val) => emailChange(val)}
                     />
-                    {data.check_textInputChange ?
+                    {data.isValidEmail ?
                         <Animatable.View animation="bounceIn">
                             <Feather
                                 name="check-circle"
@@ -104,6 +137,43 @@ function SignUpScreen({ navigation }) {
                         </Animatable.View>
                         : null}
                 </View>
+                {data.isValidEmail ? null :
+                    <Animatable.View animation="fadeInLeft" duration={500}>
+                        <Text style={styles.errorMsg}>Entrer une adresse e-mail valide.</Text>
+                    </Animatable.View>
+                }
+
+                <Text style={[styles.text_footer, { marginTop: 35 }]}>Votre nom</Text>
+                <View style={styles.action}>
+                    <Feather
+                        name="user"
+                        color="green"
+                        size={20}
+                    />
+                    <TextInput
+                        placeholder="Entrer votre nom"
+                        style={styles.text_input}
+                        autoCapitalize='none'
+                        onChangeText={(val) => usernameChange(val)}
+                    />
+                    {data.isValidUsername ?
+                        <Animatable.View animation="bounceIn">
+                            <Feather
+                                name="user-check"
+                                color="green"
+                                size={20}
+                            />
+                        </Animatable.View>
+                        : null}
+                </View>
+                {data.isValidUsername ? null :
+                    <Animatable.View animation="fadeInLeft" duration={500}>
+                        <Text style={styles.errorMsg}>
+                            le nom d'utilisateur doit contenir un minimum de 4 caractères composé uniquement de chiffres, de lettres et de caractères _ et -
+                        </Text>
+                    </Animatable.View>
+                }
+
                 <Text style={[styles.text_footer, { marginTop: 35 }]}>Mot de passe</Text>
                 <View style={styles.action}>
                     <Feather
@@ -116,7 +186,7 @@ function SignUpScreen({ navigation }) {
                         secureTextEntry={data.secureTextEntry}
                         style={styles.text_input}
                         autoCapitalize='none'
-                        onChangeText={(val) => handlePasswordChange(val)}
+                        onChangeText={(val) => passwordChange(val)}
 
                     />
                     <TouchableOpacity
@@ -137,42 +207,18 @@ function SignUpScreen({ navigation }) {
                         }
                     </TouchableOpacity>
                 </View>
-                <Text style={[styles.text_footer, { marginTop: 35 }]}>Confirmez le mot de passe</Text>
-                <View style={styles.action}>
-                    <Feather
-                        name="lock"
-                        color="green"
-                        size={20}
-                    />
-                    <TextInput
-                        placeholder="Confirmez votre mot de passe"
-                        secureTextEntry={data.confirm_secureTextEntry}
-                        style={styles.text_input}
-                        autoCapitalize='none'
-                        onChangeText={(val) => handleConfirmPasswordChange(val)}
-                    />
-                    <TouchableOpacity
-                        onPress={updateConfirmSecureTextEntry}
-                    >
-                        {data.confirm_secureTextEntry ?
-                            <Feather
-                                name="eye-off"
-                                color="grey"
-                                size={20}
-                            />
-                            :
-                            <Feather
-                                name="eye"
-                                color="grey"
-                                size={20}
-                            />
-                        }
-                    </TouchableOpacity>
-                </View>
+                {data.isValidPassword ? null :
+                    <Animatable.View animation="fadeInLeft" duration={500}>
+                        <Text style={styles.errorMsg}>
+                            Le mot de passe doit comporter au minimum 8 lettres, avec au moins un symbole, des lettres majuscules et minuscules et un chiffre
+                        </Text>
+                    </Animatable.View>
+                }
+
                 <View style={styles.button}>
                     <TouchableOpacity
                         style={styles.signIn}
-                        onPress={() => { signUp() }}
+                        onPress={() => { signUpHandle(data.email, data.username, data.password) }}
                     >
                         <LinearGradient
                             colors={['#08d4c4', '#01ab9d']}
