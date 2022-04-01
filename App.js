@@ -30,6 +30,7 @@ const App = () => {
 				return {
 					...prevState,
 					userEmail: action.id,
+					userName: action.username,
 					userToken: action.token,
 					isLoading: false,
 				}
@@ -37,6 +38,7 @@ const App = () => {
 				return {
 					...prevState,
 					userEmail: action.id,
+					userName: action.username,
 					userToken: action.token,
 					isLoading: false,
 				}
@@ -44,6 +46,7 @@ const App = () => {
 				return {
 					...prevState,
 					userEmail: null,
+					userName: null,
 					userToken: null,
 					isLoading: false,
 				}
@@ -54,18 +57,19 @@ const App = () => {
 	const [loginState, dispatch] = React.useReducer(loginReducer, initialLoginState);
 
 	const authContext = React.useMemo(() => ({
-		signIn: async (email, password) => {
-			let userToken = null;
-			if (email == 'root@info.dev' && password == '1234') { //todo: fetch from server
-				try {
-					userToken = 'token fetch from api'
-					await AsyncStorage.setItem('userToken', userToken)
-				} catch (e) {
-					alert('error on saving to local storage')
-					console.log(e);
-				}
+		signIn: async (foundUser) => {
+
+			const userToken = String(foundUser[0].userToken);
+			const userName = foundUser[0].username;
+			const email = foundUser[0].email;
+
+			try {
+				await AsyncStorage.setItem('userToken', userToken)
+			} catch (e) {
+				alert('error on saving to local storage')
+				console.log(e);
 			}
-			dispatch({ type: 'LOGIN', id: email, token: userToken });
+			dispatch({ type: 'LOGIN', id: email, username: userName, token: userToken });
 		},
 		signOut: async () => {
 			try {
@@ -75,9 +79,9 @@ const App = () => {
 			}
 			dispatch({ type: 'LOGOUT' });
 		},
-		signUp: () => {
-			setUserToken('userToken');
-			setIsLoading(false);
+		signUp: (email, username, password) => {
+			// add to ../model/users file
+			dispatch({ type: 'REGISTER', id: email, username: username, token: 'tokenUser' });
 		}
 	}), []);
 
