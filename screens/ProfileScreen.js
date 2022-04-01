@@ -61,7 +61,7 @@ const ProfileScreen = () => {
                     }]}
                 >
                     <Title>1</Title>
-                    <Caption>Ton ID</Caption>
+                    <Caption>#ID</Caption>
                 </View>
                 <View style={styles.infoBox}>
                     <Title>15</Title>

@@ -25,20 +25,6 @@ const HomeScreen = ({ navigation }) => {
                 <Image source={require("../assets/vanderotis-logo-circle.png")}
                     style={styles.logo}
                 />
-                <Animatable.View animation="bounceIn">
-                    <TouchableOpacity
-                        onPress={() => signOut()}
-                        style={[styles.signIn, {
-                            borderColor: '#fff',
-                            borderWidth: 1,
-                            marginTop: 15
-                        }]}
-                    >
-                        <Text style={[styles.textSign, {
-                            color: '#fff'
-                        }]}>Deconnexion</Text>
-                    </TouchableOpacity>
-                </Animatable.View>
             </Animatable.View>
         </View>
     )
