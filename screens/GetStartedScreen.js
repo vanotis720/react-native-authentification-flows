@@ -14,7 +14,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import * as Animatable from 'react-native-animatable';
 
 
-const SplashScreen = ({ navigation }) => {
+const GetStartedScreen = ({ navigation }) => {
 
     return (
         <View style={styles.container}>
@@ -106,4 +106,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default SplashScreen;
+export default GetStartedScreen;

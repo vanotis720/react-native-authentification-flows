@@ -6,6 +6,7 @@ import RootStackScreen from './screens/navigation/RootStackScreen';
 import AppStackScreen from './screens/navigation/AppStackScreen';
 import { AuthContext } from './components/context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import BottomTabScreen from './screens/navigation/BottomTabScreen';
 
 
 const Stack = createNativeStackNavigator();
@@ -110,7 +111,7 @@ const App = () => {
 		<AuthContext.Provider value={authContext}>
 			<NavigationContainer>
 				{loginState.userToken !== null ?
-					<AppStackScreen />
+					<BottomTabScreen />
 					:
 					<RootStackScreen />
 				}
